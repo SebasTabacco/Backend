@@ -3,6 +3,10 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+//comienzo para server
+require('dotenv').config();
+
+var pool = require('./models/bd');//me traigo el bd
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,6 +25,47 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+/*consulta todo la base de datos */
+pool.query('select * from empleados').then(function (resultados){
+  console.log(resultados)
+});
+
+/*consulto nombre y edades */
+pool.query('select id,nombre,apellido,edad from empleados').then(function (resultados) {
+  console.log(resultados)
+});
+
+/*ahora insertamos una persona */
+var obj = {
+  nombre: 'Sebastian',
+  apellido: 'Tabacco',
+  trabajo: 'Administrador en Redes',
+  edad: 40,
+  salario: 150000,
+  mails: 'sebatabacco20@gmail.com',
+}
+pool.query('insert into empleados set ?',[obj]).then(function(resultados){
+  console.log(resultados)
+});
+
+/* update */
+var id = 6;
+var obj = {
+  nombre: 'joaquin',
+  apellido: 'tabacco',
+}
+pool.query('update empleados set ? where id=?', [obj, id]).then(function (resultados) {
+  console.log(resultados)
+});
+
+/*eliminamos */
+var id = 23;
+
+pool.query('delete from empleados where id=?', [id]).then(function (resultados) {
+  console.log(resultados)
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
